@@ -3,9 +3,7 @@ import os
 ########################################## DATA INGESTION ##########################################
 
 RAW_DIR = "artifacts/raw"
-CREDENTIALS_PATH = os.path.abspath(os.path.join(
-    "utils", "credentials.json"
-))
+CREDENTIALS_PATH = r"C:\Users\T0317216\Documents\training\Beginner_Advanced_MLOps\credentials.json"
 RAW_FILE_PATH = os.path.join(RAW_DIR, "raw.csv")
 TRAIN_FILE_PATH = os.path.join(RAW_DIR, "train.csv")
 TEST_FILE_PATH = os.path.join(RAW_DIR, "test.csv")
