@@ -3,6 +3,8 @@ pipeline{
 
     environment {
         VENV_DIR = 'venv'
+        GCP_PROJECT = "dynamic-music-456811-m8"
+        GCLOUD_PATH = "/var/jenkins_home/google-cloud-sdk/bin"
     }
 
     stages{
@@ -15,7 +17,7 @@ pipeline{
             }
         }
 
-        stage("Steting up our Virtual Environment and Installing dependencies"){
+        stage("Setting up our Virtual Environment and Installing dependencies"){
             steps{
                 script {
                     echo 'Steting up our Virtual Environment and Installing dependencies................'
@@ -25,6 +27,30 @@ pipeline{
                         pip install --upgrade pip
                         pip install -e .
                     '''
+                }
+            }
+        }
+
+        stage("Building and push docker image to GCR"){
+            steps{
+                withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                    script {
+                        echo 'Building and push docker image to GCR................'
+                        sh ''' 
+                            export PATH=$PATH:${GCLOUD_PATH}
+
+                            gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+
+                            gcloud config set project ${GCP_PROJECT}
+
+                            gcloud auth configure-docker --quiet
+
+                            docker builds -t gcr.io/${GCP_PROJECT}/mlops-project:latest .
+
+                            docker push gcr.io/${GCP_PROJECT}/mlops-project:latest
+                             
+                        '''
+                    }
                 }
             }
         }
